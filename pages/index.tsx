@@ -11,6 +11,7 @@ import { VoteOption } from '../types';
 import CityCard from '../components/CityCard';
 import CityCardContainer from '../components/CityCardContainer';
 import { mutate } from 'swr';
+import { Skeleton } from '@mui/material';
 const Home: NextPage = () => {
   const votes = React.useContext(VoteContext);
   console.log(JSON.stringify(votes));
@@ -143,9 +144,68 @@ const Home: NextPage = () => {
             <button type='submit'>Oy Kullan</button>
           </div>
         </form>
-        {votes?.map((vote) => (
-          <CityCardContainer key={vote.id} result={vote} />
-        ))}
+        {_.isEmpty(votes) ? (
+          <div className='w-[18rem] h-[2rem]'>
+            <Skeleton
+              animation='wave'
+              height='2rem'
+              width={'50%'}
+              style={{
+                padding: '.5rem 4rem 0rem 4rem',
+                margin: '0 auto',
+              }}
+            />
+
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div className='m-4'>
+                <Skeleton
+                  animation='wave'
+                  height='2rem'
+                  width={'50%'}
+                  style={{
+                    padding: '.5rem 4rem .5rem 4rem',
+                  }}
+                />
+
+                <div key={i} className='border border-gray-200 rounded-lg p-4 '>
+                  <div>
+                    <Skeleton
+                      animation='wave'
+                      height='1.6rem'
+                      width={'100%'}
+                      style={{
+                        padding: '.5rem 4rem .5rem 4rem',
+                        borderRadius: '.9rem',
+                      }}
+                    />
+                  </div>
+                  <Skeleton
+                    animation='wave'
+                    height='1.5rem'
+                    width={'3rem'}
+                    style={{
+                      margin: '0 auto',
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+            <Skeleton
+              animation='wave'
+              height='1rem'
+              width={'20%'}
+              style={{
+                padding: '.5rem 4rem .5rem 4rem',
+                marginLeft: 'auto',
+                marginRight: '1rem',
+              }}
+            />
+          </div>
+        ) : (
+          votes?.map((vote) => (
+            <CityCardContainer key={vote.id} result={vote} />
+          ))
+        )}
       </div>
     </div>
   );
