@@ -157,7 +157,7 @@ const Home: NextPage = () => {
             />
 
             {Array.from({ length: 4 }).map((_, i) => (
-              <div className='m-4'>
+              <div key={i} className='m-4'>
                 <Skeleton
                   animation='wave'
                   height='2rem'
@@ -167,15 +167,15 @@ const Home: NextPage = () => {
                   }}
                 />
 
-                <div key={i} className='border border-gray-200 rounded-lg p-4 '>
+                <div className='border border-gray-200 rounded-lg p-4 '>
                   <div>
                     <Skeleton
                       animation='wave'
                       height='1.6rem'
                       width={'100%'}
                       style={{
-                        padding: '.5rem 4rem .5rem 4rem',
-                        borderRadius: '.9rem',
+                        margin: '.5rem 0 .5rem 0',
+                        borderRadius: '.5rem',
                       }}
                     />
                   </div>
