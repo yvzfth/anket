@@ -26,26 +26,15 @@ export default async function handler(
   if (req.method === 'POST') {
     const vote = req.body;
     try {
-      let cityVotes = doc(
-        db,
-        `${getKeyByValue(cities, vote.city)}`,
-        `${getKeyByValue(cities, vote.city)}`
-      );
+      let cityVotes = doc(db, 'votes', `${getKeyByValue(cities, vote.city)}`);
       await getDoc(cityVotes).then(async (docSnap) => {
         if (!docSnap.exists()) {
-          await setDoc(
-            doc(
-              db,
-              `${getKeyByValue(cities, vote.city)}`,
-              `${getKeyByValue(cities, vote.city)}`
-            ),
-            {
-              [VoteOption.Option1]: vote?.option === VoteOption.Option1 ? 1 : 0,
-              [VoteOption.Option2]: vote?.option === VoteOption.Option2 ? 1 : 0,
-              [VoteOption.Option3]: vote?.option === VoteOption.Option3 ? 1 : 0,
-              [VoteOption.Option4]: vote?.option === VoteOption.Option4 ? 1 : 0,
-            }
-          );
+          await setDoc(cityVotes, {
+            [VoteOption.Option1]: vote?.option === VoteOption.Option1 ? 1 : 0,
+            [VoteOption.Option2]: vote?.option === VoteOption.Option2 ? 1 : 0,
+            [VoteOption.Option3]: vote?.option === VoteOption.Option3 ? 1 : 0,
+            [VoteOption.Option4]: vote?.option === VoteOption.Option4 ? 1 : 0,
+          });
           await updateDoc(cityVotes, {
             [vote?.option]: docSnap?.data()![vote?.option] + 1,
           }).then(() => res.send(`Document updated`));
@@ -92,16 +81,16 @@ export default async function handler(
     //     });
     //   }
     const votes: any[] = [];
-    for (const city of Object.keys(cities)) {
-      const querySnapshot = await getDocs(collection(db, city));
-      querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        votes.push({
-          id: doc.id,
-          ...doc.data(),
-        });
+
+    const querySnapshot = await getDocs(collection(db, 'votes'));
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      votes.push({
+        id: doc.id,
+        ...doc.data(),
       });
-    }
+    });
+
     res.send(votes);
   } else {
     res.status(200).json({ name: 'John Doe' });
