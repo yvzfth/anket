@@ -25,7 +25,12 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     const vote = req.body;
-    if (typeof vote.city === 'undefined') res.send('Konum belirlenemedi');
+    if (
+      typeof vote.city === 'undefined' ||
+      vote.city === '' ||
+      vote.city === null
+    )
+      res.send('Konum belirlenemedi');
     else {
       try {
         let cityVotes = doc(db, 'votes', `${getKeyByValue(cities, vote.city)}`);

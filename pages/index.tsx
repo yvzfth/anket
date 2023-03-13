@@ -18,7 +18,7 @@ const Home: NextPage = () => {
   const [lat, setLat] = React.useState<number | null>(null);
   const [lon, setLon] = React.useState<number | null>(null);
   const [status, setStatus] = React.useState<string | null>(null);
-  const [city, setCity] = React.useState<string | null>('');
+  const [city, setCity] = React.useState<string | undefined>();
   const [selectedOption, setSelectedOption] = React.useState('');
   const getLocation = async () => {
     await axios
