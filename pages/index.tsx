@@ -8,71 +8,21 @@ import cities from '../lib/cities';
 import { VoteContext } from '../context/VoteContext';
 import _ from 'lodash';
 import { VoteOption } from '../types';
-import CityCard from '../components/CityCard';
+
 import CityCardContainer from '../components/CityCardContainer';
 import { mutate } from 'swr';
-import { Skeleton } from '@mui/material';
+import { CircularProgress, Skeleton } from '@mui/material';
+import { CityContext } from '../context/CityContext';
 const Home: NextPage = () => {
   const votes = React.useContext(VoteContext);
-  console.log(JSON.stringify(votes));
-  const [lat, setLat] = React.useState<number | null>(null);
-  const [lon, setLon] = React.useState<number | null>(null);
-  const [status, setStatus] = React.useState<string | null>(null);
-  const [city, setCity] = React.useState<string | undefined>();
+  const city = React.useContext(CityContext);
+  // const [lat, setLat] = React.useState<number | null>(null);
+  // const [lon, setLon] = React.useState<number | null>(null);
+  // const [status, setStatus] = React.useState<string | null>(null);
   const [selectedOption, setSelectedOption] = React.useState('');
-  const getLocation = async () => {
-    await axios
-      .get(
-        `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.ABSTRACTAPI_API_KEY}&fields=city`
-      )
-      .then((response: any) => {
-        setCity(cities[String(response.data.city)]);
-      })
-      .catch((error: any) => {
-        console.log(error);
-      });
-    // if (!navigator.geolocation) {
-    //   console.log('no service');
-    //   setStatus('Geolocation is not supported by your browser');
-    //   setStatus('Locating...');
-    //   axios
-    //     .get(
-    //       `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.ABSTRACTAPI_API_KEY}&fields=city`
-    //     )
-    //     .then((response: any) => {
-    //       setCity(cities[String(response.data.city)]);
-    //     })
-    //     .catch((error: any) => {
-    //       console.log(error);
-    //     });
-    // } else {
-    //   setStatus('Locating...');
-    //   navigator.geolocation.getCurrentPosition(
-    //     (position) => {
-    //       setLat(position.coords.latitude);
-    //       setLon(position.coords.longitude);
-    //     },
-    //     (err) => {
-    //       setStatus(err.message);
-    //       setStatus('Locating...');
-    //       axios
-    //         .get(
-    //           `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.ABSTRACTAPI_API_KEY}&fields=city`
-    //         )
-    //         .then((response: any) => {
-    //           setCity(cities[String(response.data.city)]);
-    //         })
-    //         .catch((error: any) => {
-    //           console.log(error);
-    //         });
-    //     }
-    //   );
-    // }
-  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    getLocation();
     try {
       await axios
         .post('/api/vote', {
@@ -80,8 +30,11 @@ const Home: NextPage = () => {
           city: city,
         })
         .then((res) => {
-          toast.success(res.data);
-          mutate('/api/vote');
+          if (res.status === 403) toast.error(res.data);
+          else {
+            toast.success(res.data);
+            mutate('/api/vote');
+          }
         })
         .catch((err) => toast.error(err));
       setSelectedOption('');

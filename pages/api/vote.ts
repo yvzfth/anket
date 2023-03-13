@@ -30,7 +30,7 @@ export default async function handler(
       vote.city === '' ||
       vote.city === null
     )
-      res.send('Konum belirlenemedi');
+      res.status(403).send('Konum belirlenemedi');
     else {
       try {
         let cityVotes = doc(db, 'votes', `${getKeyByValue(cities, vote.city)}`);
