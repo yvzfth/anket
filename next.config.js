@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-}
 
-module.exports = nextConfig
+  env: {
+    LOCATION_IQ_ACCESS_TOKEN: process.env.LOCATION_IQ_ACCESS_TOKEN,
+    ABSTRACTAPI_API_KEY: process.env.ABSTRACTAPI_API_KEY,
+  },
+};
+
+module.exports = nextConfig;
