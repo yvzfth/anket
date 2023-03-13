@@ -25,33 +25,36 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     const vote = req.body;
-    try {
-      let cityVotes = doc(db, 'votes', `${getKeyByValue(cities, vote.city)}`);
-      await getDoc(cityVotes).then(async (docSnap) => {
-        if (!docSnap.exists()) {
-          await setDoc(cityVotes, {
-            [VoteOption.Option1]: vote?.option === VoteOption.Option1 ? 1 : 0,
-            [VoteOption.Option2]: vote?.option === VoteOption.Option2 ? 1 : 0,
-            [VoteOption.Option3]: vote?.option === VoteOption.Option3 ? 1 : 0,
-            [VoteOption.Option4]: vote?.option === VoteOption.Option4 ? 1 : 0,
-          });
-          await updateDoc(cityVotes, {
-            [vote?.option]: docSnap?.data()![vote?.option] + 1,
-          }).then(() => res.send(`Document updated`));
-        } else {
-          await updateDoc(cityVotes, {
-            [vote?.option]: docSnap.data()[vote?.option] + 1,
-          }).then(() => res.send(`Document updated`));
-        }
-      });
-      //   const docRef = await addDoc(
-      //     collection(db, `${getKeyByValue(cities, vote.city)}`),
-      //     {
-      //       ...vote,
-      //     }
-      //   );
-    } catch (e) {
-      res.send(`Error adding document: ${e}`);
+    if (typeof vote.city === 'undefined') res.send('Konum belirlenemedi');
+    else {
+      try {
+        let cityVotes = doc(db, 'votes', `${getKeyByValue(cities, vote.city)}`);
+        await getDoc(cityVotes).then(async (docSnap) => {
+          if (!docSnap.exists()) {
+            await setDoc(cityVotes, {
+              [VoteOption.Option1]: vote?.option === VoteOption.Option1 ? 1 : 0,
+              [VoteOption.Option2]: vote?.option === VoteOption.Option2 ? 1 : 0,
+              [VoteOption.Option3]: vote?.option === VoteOption.Option3 ? 1 : 0,
+              [VoteOption.Option4]: vote?.option === VoteOption.Option4 ? 1 : 0,
+            });
+            await updateDoc(cityVotes, {
+              [vote?.option]: docSnap?.data()![vote?.option] + 1,
+            }).then(() => res.send(`Document updated`));
+          } else {
+            await updateDoc(cityVotes, {
+              [vote?.option]: docSnap.data()[vote?.option] + 1,
+            }).then(() => res.send(`Document updated`));
+          }
+        });
+        //   const docRef = await addDoc(
+        //     collection(db, `${getKeyByValue(cities, vote.city)}`),
+        //     {
+        //       ...vote,
+        //     }
+        //   );
+      } catch (e) {
+        res.send(`Error adding document: ${e}`);
+      }
     }
   } else if (req.method === 'GET') {
     // db.collection("cart-items").onSnapshot((snapshot) => {
