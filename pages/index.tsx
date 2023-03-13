@@ -10,6 +10,7 @@ import _ from 'lodash';
 import { VoteOption } from '../types';
 import CityCard from '../components/CityCard';
 import CityCardContainer from '../components/CityCardContainer';
+import { mutate } from 'swr';
 const Home: NextPage = () => {
   const votes = React.useContext(VoteContext);
   console.log(JSON.stringify(votes));
@@ -18,44 +19,54 @@ const Home: NextPage = () => {
   const [status, setStatus] = React.useState<string | null>(null);
   const [city, setCity] = React.useState<string | null>('');
   const [selectedOption, setSelectedOption] = React.useState('');
-  const getLocation = () => {
-    if (!navigator.geolocation) {
-      console.log('no service');
-      setStatus('Geolocation is not supported by your browser');
-      setStatus('Locating...');
-      axios
-        .get(
-          `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.ABSTRACTAPI_API_KEY}&fields=city`
-        )
-        .then((response: any) => {
-          setCity(cities[String(response.data.city)]);
-        })
-        .catch((error: any) => {
-          console.log(error);
-        });
-    } else {
-      setStatus('Locating...');
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLat(position.coords.latitude);
-          setLon(position.coords.longitude);
-        },
-        (err) => {
-          setStatus(err.message);
-          setStatus('Locating...');
-          axios
-            .get(
-              `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.ABSTRACTAPI_API_KEY}&fields=city`
-            )
-            .then((response: any) => {
-              setCity(cities[String(response.data.city)]);
-            })
-            .catch((error: any) => {
-              console.log(error);
-            });
-        }
-      );
-    }
+  const getLocation = async () => {
+    await axios
+      .get(
+        `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.ABSTRACTAPI_API_KEY}&fields=city`
+      )
+      .then((response: any) => {
+        setCity(cities[String(response.data.city)]);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+    // if (!navigator.geolocation) {
+    //   console.log('no service');
+    //   setStatus('Geolocation is not supported by your browser');
+    //   setStatus('Locating...');
+    //   axios
+    //     .get(
+    //       `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.ABSTRACTAPI_API_KEY}&fields=city`
+    //     )
+    //     .then((response: any) => {
+    //       setCity(cities[String(response.data.city)]);
+    //     })
+    //     .catch((error: any) => {
+    //       console.log(error);
+    //     });
+    // } else {
+    //   setStatus('Locating...');
+    //   navigator.geolocation.getCurrentPosition(
+    //     (position) => {
+    //       setLat(position.coords.latitude);
+    //       setLon(position.coords.longitude);
+    //     },
+    //     (err) => {
+    //       setStatus(err.message);
+    //       setStatus('Locating...');
+    //       axios
+    //         .get(
+    //           `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.ABSTRACTAPI_API_KEY}&fields=city`
+    //         )
+    //         .then((response: any) => {
+    //           setCity(cities[String(response.data.city)]);
+    //         })
+    //         .catch((error: any) => {
+    //           console.log(error);
+    //         });
+    //     }
+    //   );
+    // }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -67,7 +78,10 @@ const Home: NextPage = () => {
           option: selectedOption,
           city: city,
         })
-        .then((res) => toast.success(res.data))
+        .then((res) => {
+          toast.success(res.data);
+          mutate('/api/vote');
+        })
         .catch((err) => toast.error(err));
       setSelectedOption('');
     } catch (error: any) {
@@ -82,16 +96,7 @@ const Home: NextPage = () => {
         <meta name='description' content='2023 Cumhurbaşkanı Seçim Anketi ' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      {/* {!_.isEmpty(votes) && (
-        <div>
-          {votes?.map((vote) => (
-            <div>
-              <div>{vote.city}</div>
-              <div>{vote.option}</div>
-            </div>
-          ))}
-        </div>
-      )} */}
+
       <div className='flex gap-4 flex-wrap'>
         <form onSubmit={handleSubmit}>
           <div className='flex flex-col gap-1 justify-center w-[16rem] p-4 bg-slate-50 rounded-xl shadow-lg'>
