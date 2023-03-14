@@ -25,7 +25,7 @@ const Home: NextPage = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!Object.keys(cities).includes(city))
+    if (!Object.keys(cities).includes(city!))
       return toast.error('Konumunuz Türkiye İçinde Bulunmalı!');
     if (selectedOption === '') return toast.error('Aday Şeçimi Yapmadınız!');
 
