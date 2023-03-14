@@ -25,7 +25,7 @@ const Home: NextPage = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!Object.keys(cities).includes(city!))
+    if (!Object.values(cities).includes(city!))
       return toast.error('Konumunuz Türkiye İçinde Bulunmalı!');
     if (selectedOption === '') return toast.error('Aday Şeçimi Yapmadınız!');
 
@@ -36,8 +36,7 @@ const Home: NextPage = () => {
           city: city,
         })
         .then((res) => {
-          if (res.status === 403)
-            toast.error('Konumunuz Türkiye İçinde Bulunmalı!');
+          if (res.status === 403) toast.error(res.data);
           else {
             toast.success('🗳️ Oy Kullanıldı 🎉');
             mutate('/api/vote');
