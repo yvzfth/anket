@@ -18,7 +18,7 @@ const CityCardContainer = ({ result }: { result: IResult }) => {
       ) : (
         <div>
           <div className='text-center font-semibold text-xl capitalize'>
-            {cities[result.id].toLowerCase()}
+            {cities[result.id]}
           </div>
           <CityCard
             name={VoteOption.Option1}

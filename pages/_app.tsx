@@ -18,7 +18,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.ABSTRACTAPI_API_KEY}&fields=city`
       )
       .then((response: any) => {
-        setCity(cities[String(response.data.city)]);
+        if (!Object.keys(cities).includes(response.data.city))
+          setCity(undefined);
+        else setCity(cities[String(response.data.city)]);
       })
       .catch((error: any) => {
         console.log(error);

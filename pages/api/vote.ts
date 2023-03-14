@@ -41,10 +41,7 @@ export default async function handler(
               [VoteOption.Option2]: vote?.option === VoteOption.Option2 ? 1 : 0,
               [VoteOption.Option3]: vote?.option === VoteOption.Option3 ? 1 : 0,
               [VoteOption.Option4]: vote?.option === VoteOption.Option4 ? 1 : 0,
-            });
-            await updateDoc(cityVotes, {
-              [vote?.option]: docSnap?.data()![vote?.option] + 1,
-            }).then(() => res.send(`Document updated`));
+            }).then(() => res.send(`Document created`));
           } else {
             await updateDoc(cityVotes, {
               [vote?.option]: docSnap.data()[vote?.option] + 1,

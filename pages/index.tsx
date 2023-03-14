@@ -4,18 +4,20 @@ import axios from 'axios';
 import { FormEvent } from 'react';
 import React from 'react';
 import { toast } from 'react-hot-toast';
-import cities from '../lib/cities';
+// import cities from '../lib/cities';
 import { VoteContext } from '../context/VoteContext';
 import _ from 'lodash';
 import { VoteOption } from '../types';
 
 import CityCardContainer from '../components/CityCardContainer';
 import { mutate } from 'swr';
-import { CircularProgress, Skeleton } from '@mui/material';
+import { Skeleton } from '@mui/material';
 import { CityContext } from '../context/CityContext';
+import cities from '../lib/cities';
 const Home: NextPage = () => {
   const votes = React.useContext(VoteContext);
   const city = React.useContext(CityContext);
+
   // const [lat, setLat] = React.useState<number | null>(null);
   // const [lon, setLon] = React.useState<number | null>(null);
   // const [status, setStatus] = React.useState<string | null>(null);
@@ -23,6 +25,10 @@ const Home: NextPage = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!Object.keys(cities).includes(city))
+      return toast.error('Konumunuz Türkiye İçinde Bulunmalı!');
+    if (selectedOption === '') return toast.error('Aday Şeçimi Yapmadınız!');
+
     try {
       await axios
         .post('/api/vote', {
@@ -30,9 +36,10 @@ const Home: NextPage = () => {
           city: city,
         })
         .then((res) => {
-          if (res.status === 403) toast.error(res.data);
+          if (res.status === 403)
+            toast.error('Konumunuz Türkiye İçinde Bulunmalı!');
           else {
-            toast.success(res.data);
+            toast.success('🗳️ Oy Kullanıldı 🎉');
             mutate('/api/vote');
           }
         })
