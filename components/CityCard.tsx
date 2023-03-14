@@ -14,7 +14,12 @@ const CityCard = ({
 
   return (
     <div className=' px-4 py-2'>
-      <div className='text-lg font-medium mb-2'>{name}</div>
+      <div className='text-lg font-medium mb-2 flex justify-between'>
+        <div>{name}</div>
+        <span className='font-light text-lg'>
+          {Math.round(((vote * 100) / totalVote + Number.EPSILON) * 100) / 100}%
+        </span>
+      </div>
       <div className='border border-gray-200 rounded-lg p-4'>
         <div className='bg-gray-100 rounded-lg'>
           <div
